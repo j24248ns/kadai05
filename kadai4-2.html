@@ -2,9 +2,12 @@
 <html lang="ja">
     <head>
         <meta charset="utf-8">
-        <title>演習課題4-2：自動販売機</title>
+        <title>演習課題5-2：自動販売機（クラス）</title>
     </head>
     <body>
+        <h1 id="vending-machine">自動販売機システム</h1>
+        <table id="item_area" border="1"></table>
+
         <script>
             // 商品一覧を記録する連想配列の配列
             const items =  [
@@ -18,26 +21,103 @@
                 { id: 8, name: "紅茶", price: 140, stock: 6 }
             ]
 
-            // 商品一覧の表示関数
-            function showItemList() {
-                console.log("商品は以下の" + items.length + "種類です。");
+            // 商品用のクラス定義
+            class Item {
+                static number = 0;
 
-                // 配列の内容を項目毎に出力
-                // ここにコードを書く
-                console.log(""); // 空行の出力
+                constructor(name, price, stock) {
+                    Item.number++;
+                    this.id = Item.number;
+                    this.name = name;
+                    this.price = price;
+                    this.stock = stock;
+                }
+
+                // 商品一覧の表示関数
+                static showItemList(list) {
+                    console.log("商品は以下の" + Item.number + "種類です。");
+
+                    // 配列の内容を項目毎に出力
+                    // A. ここにコードを書く
+                    for (let i = 0; i < list.length; i++) {
+                        console.log(
+                            "商品番号: " + list[i].id +
+                            ", 商品名: " + list[i].name +
+                            ", 金額: " + list[i].price +
+                            ", 在庫数: " + list[i].stock
+                        );
+                    }
+
+                    console.log(""); // 空行の出力
+                }
+                
+                // 商品購入の関数
+                buyItem() {          
+                    if (this.stock >= 1) { 
+                        console.log("商品番号: "+this.id+", 商品名: "+this.name+"を購入します。");
+
+                        // B. ここにコードを書く
+                        // 購入による商品の在庫削減処理
+                        this.stock--;
+                        console.log("残りは" + this.stock + "個です。");
+                        
+                        // C. ここにコードを書く
+                        // 在庫用のエレメントを抽出し、HTML内の個数を更新
+                        document.getElementById("stock" + this.id).textContent = this.stock;
+
+                    } else {
+                        console.log(this.name+"は商品の在庫がないため購入できません。");
+                    }
+                }
+            } // End of Item class
+
+            // 商品テーブルのエレメント抽出
+            const itemArea = document.getElementById("item_area");
+            itemArea.innerHTML += "<tr><th>商品名</th><th>金額</th><th>在庫数</th><th>購入</th></tr>";
+
+            // 配列のオブジェクト作成
+            const item_list = new Array(items.length);
+            const btn = new Array(items.length);
+
+            // A. ここにコード書く
+            // 商品オブジェクトの生成
+            for (let i = 0; i < items.length; i++) {
+                item_list[i] = new Item(
+                    items[i].name,
+                    items[i].price,
+                    items[i].stock
+                );
+
+                console.log(
+                    "id: " + item_list[i].id +
+                    ", name: " + item_list[i].name +
+                    ", " + item_list[i].price + "円" +
+                    ", 残り" + item_list[i].stock + "個"
+                );
             }
 
-            // 商品購入の関数
-            function buyItem(no) {
-                // ここにコードを書く
-                showItemList(); // 商品一覧の表示関数呼び出し
+            // B. ここにコードを書く
+            // 商品表の作成
+            for (let i = 0; i < item_list.length; i++) {
+                itemArea.innerHTML +=
+                    "<tr>" +
+                    "<td>" + item_list[i].name + "</td>" +
+                    "<td>" + item_list[i].price + "円</td>" +
+                    "<td id='stock" + item_list[i].id + "'>" + item_list[i].stock + "</td>" +
+                    "<td><button id='button" + item_list[i].id + "'>購入</button></td>" +
+                    "</tr>";
             }
 
-            showItemList(); // 商品一覧の表示関数呼び出し
-            buyItem(3); // 商品購入の関数呼び出し
+            // クリックイベント時の購入処理の設定
+            for (let i=0; i<item_list.length; i++) {
 
-            buyItem(5); // 商品購入の関数呼び出し
-            buyItem(5); // 商品購入の関数呼び出し
+                // C. ここにコードを書く
+                document.getElementById("button"+item_list[i].id).onclick = () => {
+                    item_list[i].buyItem();
+                }
+            }
+
+            Item.showItemList(item_list);
 
         </script>
     </body>
